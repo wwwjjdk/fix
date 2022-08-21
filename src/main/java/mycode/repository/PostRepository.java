@@ -12,8 +12,8 @@ public class PostRepository {
     protected ConcurrentHashMap<Long, Post> map = new ConcurrentHashMap();
     private AtomicLong atomicLong = new AtomicLong();
 
-    public Collection<Post> all() {
-        return map.values();
+    public List<Post> all() {
+        return (List<Post>) map.values();
     }
 
     public Optional<Post> getById(long id) {
@@ -37,12 +37,12 @@ public class PostRepository {
         return post;
     }
 
-    public boolean removeById(long id) {
+    public void removeById(long id) {
         if (map.containsKey(id)) {
             map.remove(id);
-            return true;
+
         } else {
-            return false;
+            throw new NotFoundException();
         }
     }
 

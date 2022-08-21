@@ -27,38 +27,24 @@ public class PostController {
     }
 
     public void getById(long id, HttpServletResponse response) throws IOException {
-        try {
-            response.setContentType(APPLICATION_JSON);
-            final var data = service.getById(id);
-            response.getWriter().print(gson.toJson(data));
-        } catch (NotFoundException e) {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-        }
-
+        response.setContentType(APPLICATION_JSON);
+        final var data = service.getById(id);
+        response.getWriter().print(gson.toJson(data));
 
     }
 
     public void save(Reader body, HttpServletResponse response) throws IOException {
-        try{
-            response.setContentType(APPLICATION_JSON);
-            final var post = gson.fromJson(body, Post.class);
-            final var data = service.save(post);
-            response.getWriter().print(gson.toJson(data));
-        }catch (NotFoundException e){
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-        }
 
+        response.setContentType(APPLICATION_JSON);
+        final var post = gson.fromJson(body, Post.class);
+        final var data = service.save(post);
+        response.getWriter().print(gson.toJson(data));
     }
 
     public void removeById(long id, HttpServletResponse response) throws IOException {
         response.setContentType(APPLICATION_JSON);
-        boolean answer = service.removeById(id);
-        if (answer) {
-            response.getWriter().printf(gson.toJson("объект с id[%s] удален"), id);
-        } else {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-        }
-
+        service.removeById(id);
+        response.getWriter().printf(gson.toJson("объект с id[%s] удален"), id);
 
     }
 

@@ -1,6 +1,7 @@
 package mycode;
 
 import mycode.controller.PostController;
+import mycode.exceprtion.NotFoundException;
 import mycode.repository.PostRepository;
 import mycode.service.PostService;
 
@@ -24,28 +25,32 @@ public class MainServlet extends HttpServlet {
         try {
             final var path = req.getRequestURI(); //uri url urn
             final var method = req.getMethod(); //get post etc
+           try {
+               if (method.equals("GET") && path.equals("/api/posts")) {
+                   controller.all(res);
+                   return;
+               }
+               if (method.equals("GET") && path.matches("/api/posts/\\d+")) {
 
-            if (method.equals("GET") && path.equals("/api/posts")) {
-                controller.all(res);
-                return;
-            }
-            if (method.equals("GET") && path.matches("/api/posts/\\d+")) {
+                   final var id = parse(path);
+                   controller.getById(id, res);
+                   return;
+               }
+               if (method.equals("POST") && path.equals("/api/posts")) {
+                   controller.save(req.getReader(), res);
+                   return;
+               }
+               if (method.equals("DELETE") && path.matches("/api/posts/\\d+")) {
+                   // easy way
+                   final var id = parse(path);
+                   controller.removeById(id, res);
+                   return;
+               }
+               res.setStatus(HttpServletResponse.SC_NOT_FOUND);
+           }catch (NotFoundException ignored){
+               res.setStatus(HttpServletResponse.SC_NOT_FOUND);
+           }
 
-                final var id = parse(path);
-                controller.getById(id, res);
-                return;
-            }
-            if (method.equals("POST") && path.equals("/api/posts")) {
-                controller.save(req.getReader(), res);
-                return;
-            }
-            if (method.equals("DELETE") && path.matches("/api/posts/\\d+")) {
-                // easy way
-                final var id = parse(path);
-                controller.removeById(id, res);
-                return;
-            }
-            res.setStatus(HttpServletResponse.SC_NOT_FOUND);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
